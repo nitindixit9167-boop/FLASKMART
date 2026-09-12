@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}FlaskMart &mdash; Books &amp; everyday finds{% endblock %}
+
+{% block content %}
+<section class="fm-hero">
+  <span class="fm-eyebrow">Welcome to the store</span>
+  <h1>Good books and useful things, picked one at a time.</h1>
+  <p>FlaskMart is a small storefront for the reads and everyday items worth keeping around. Browse the shelves, add what you need, and check out in a couple of clicks.</p>
+  <a href="{{ url_for('products.list_products') }}" class="btn fm-btn-accent mt-2 px-4 py-2">Browse the shelves</a>
+</section>
+
+<div class="fm-section-title">
+  <h2 class="h4 mb-0">Recently added</h2>
+  <a href="{{ url_for('products.list_products') }}">See everything &rarr;</a>
+</div>
+
+<div class="row g-4">
+  {% for product in featured %}
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="{{ url_for('products.detail', slug=product.slug) }}" class="text-decoration-none text-reset">
+        <div class="fm-card">
+          <img class="fm-card-img w-100" src="{{ product.image_url or 'https://placehold.co/400x300?text=FlaskMart' }}" alt="{{ product.name }}">
+          <div class="fm-card-body">
+            <span class="fm-card-type">{{ 'Book' if product.product_type == 'book' else 'General' }}</span>
+            <h3 class="fm-card-title">{{ product.name }}</h3>
+            <div class="fm-card-price">₹{{ '%.2f'|format(product.price) }}</div>
+            {% if product.stock == 0 %}
+              <div class="fm-stock-out">Out of stock</div>
+            {% elif product.stock <= 3 %}
+              <div class="fm-stock-low">Only {{ product.stock }} left</div>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    </div>
+  {% else %}
+    <p class="text-muted">No products yet &mdash; run <code>python seed.py</code> to load sample data.</p>
+  {% endfor %}
+</div>
+
+{% if categories %}
+<div class="mt-5">
+  <h2 class="h4 mb-3">Shop by category</h2>
+  <div class="d-flex flex-wrap gap-2">
+    {% for c in categories %}
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('products.list_products', category=c.id) }}">{{ c.name }}</a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

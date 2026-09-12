@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }} &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-1">Order #{{ order.id }}</h1>
+<p class="text-muted">
+  Placed {{ order.created_at.strftime('%d %b %Y, %H:%M') }} &middot;
+  <span class="badge fm-status-{{ order.status }}">{{ order.status }}</span>
+</p>
+
+<div class="row mt-4">
+  <div class="col-md-7">
+    <table class="table fm-table align-middle">
+      <thead>
+        <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+      </thead>
+      <tbody>
+        {% for item in order.items %}
+          <tr>
+            <td>{{ item.product.name if item.product else 'Removed product' }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ '%.2f'|format(item.price_at_purchase) }}</td>
+            <td>₹{{ '%.2f'|format(item.subtotal) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="text-end h5">Total: ₹{{ '%.2f'|format(order.total_amount) }}</div>
+  </div>
+  <div class="col-md-5">
+    <h2 class="h6 text-muted">Shipping address</h2>
+    <p>{{ order.shipping_address }}</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My orders &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">My orders</h1>
+
+{% if orders %}
+  <table class="table fm-table align-middle">
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td>#{{ order.id }}</td>
+          <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+          <td><span class="badge fm-status-{{ order.status }}">{{ order.status }}</span></td>
+          <td>₹{{ '%.2f'|format(order.total_amount) }}</td>
+          <td><a href="{{ url_for('orders.detail', order_id=order.id) }}">View</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">You haven't placed any orders yet. <a href="{{ url_for('products.list_products') }}">Start shopping</a>.</p>
+{% endif %}
+{% endblock %}

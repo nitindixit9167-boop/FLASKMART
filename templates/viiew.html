@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Your cart &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Your cart</h1>
+
+{% if items %}
+  <table class="table fm-table align-middle">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td>
+            <a href="{{ url_for('products.detail', slug=item.product.slug) }}" class="text-reset">{{ item.product.name }}</a>
+          </td>
+          <td>₹{{ '%.2f'|format(item.product.price) }}</td>
+          <td>
+            <form method="post" action="{{ url_for('cart.update_item', item_id=item.id) }}" class="d-flex">
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="form-control form-control-sm" style="width: 80px;">
+              <button type="submit" class="btn btn-outline-secondary btn-sm ms-2">Update</button>
+            </form>
+          </td>
+          <td>₹{{ '%.2f'|format(item.subtotal) }}</td>
+          <td>
+            <form method="post" action="{{ url_for('cart.remove_item', item_id=item.id) }}">
+              <button type="submit" class="btn btn-link btn-sm text-danger p-0">Remove</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-end align-items-center gap-4 mt-4">
+    <span class="h5 mb-0">Total: ₹{{ '%.2f'|format(total) }}</span>
+    <a href="{{ url_for('orders.checkout') }}" class="btn fm-btn-accent px-4">Proceed to checkout</a>
+  </div>
+{% else %}
+  <p class="text-muted">Your cart is empty. <a href="{{ url_for('products.list_products') }}">Go find something</a>.</p>
+{% endif %}
+{% endblock %}

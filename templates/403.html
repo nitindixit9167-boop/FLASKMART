@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Access denied{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="h3">Staff only, past this point.</h1>
+  <p class="text-muted">You don't have permission to view this page.</p>
+  <a href="{{ url_for('main.index') }}" class="btn fm-btn-accent mt-2">Back to the storefront</a>
+</div>
+{% endblock %}

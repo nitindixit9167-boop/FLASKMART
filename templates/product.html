@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Manage products &mdash; FlaskMart{% endblock %}
+{% block content %}
+<div class="fm-section-title">
+  <h1 class="h3 mb-0">Products</h1>
+  <a href="{{ url_for('admin.new_product') }}" class="btn fm-btn-accent">Add product</a>
+</div>
+
+<table class="table fm-table align-middle">
+  <thead>
+    <tr><th>Name</th><th>Type</th><th>Price</th><th>Stock</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.product_type }}</td>
+        <td>₹{{ '%.2f'|format(p.price) }}</td>
+        <td>{{ p.stock }}</td>
+        <td class="d-flex gap-2">
+          <a href="{{ url_for('admin.edit_product', product_id=p.id) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+          <form method="post" action="{{ url_for('admin.delete_product', product_id=p.id) }}" onsubmit="return confirm('Delete this product?');">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="text-muted">No products yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

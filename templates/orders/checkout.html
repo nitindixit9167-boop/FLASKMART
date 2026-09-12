@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Checkout &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Checkout</h1>
+
+<div class="row g-5">
+  <div class="col-md-7">
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.shipping_address.label(class="form-label") }}
+        {{ form.shipping_address(class="form-control" + (" is-invalid" if form.shipping_address.errors else ""), rows=4) }}
+        {% for e in form.shipping_address.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      {{ form.submit(class="btn fm-btn-accent px-4") }}
+    </form>
+  </div>
+
+  <div class="col-md-5">
+    <h2 class="h6 text-muted mb-3">Order summary</h2>
+    {% for item in items %}
+      <div class="d-flex justify-content-between mb-2">
+        <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+        <span>₹{{ '%.2f'|format(item.subtotal) }}</span>
+      </div>
+    {% endfor %}
+    <hr>
+    <div class="d-flex justify-content-between h5">
+      <span>Total</span>
+      <span>₹{{ '%.2f'|format(total) }}</span>
+    </div>
+  </div>
+</div>
+{% endblock %}

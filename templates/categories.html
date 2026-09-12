@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Manage categories &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Categories</h1>
+
+<form method="post" class="d-flex gap-2 mb-4" style="max-width: 420px;">
+  {{ form.hidden_tag() }}
+  {{ form.name(class="form-control", placeholder="New category name") }}
+  {{ form.submit(class="btn fm-btn-accent") }}
+</form>
+
+<ul class="list-group" style="max-width: 420px;">
+  {% for c in categories %}
+    <li class="list-group-item d-flex justify-content-between">
+      {{ c.name }} <span class="text-muted small">{{ c.products|length }} product(s)</span>
+    </li>
+  {% else %}
+    <li class="list-group-item text-muted">No categories yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

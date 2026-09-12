@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} &mdash; FlaskMart{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">{{ title }}</h1>
+
+<form method="post" style="max-width: 560px;">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.name.label(class="form-label") }}
+    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+    {% for e in form.name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form.product_type.label(class="form-label") }}
+      {{ form.product_type(class="form-select") }}
+    </div>
+    <div class="col-md-6 mb-3">
+      {{ form.category_id.label(class="form-label") }}
+      {{ form.category_id(class="form-select") }}
+    </div>
+  </div>
+  <div class="mb-3">
+    {{ form.author.label(class="form-label") }}
+    {{ form.author(class="form-control") }}
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form.price.label(class="form-label") }}
+      {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else "")) }}
+      {% for e in form.price.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6 mb-3">
+      {{ form.stock.label(class="form-label") }}
+      {{ form.stock(class="form-control" + (" is-invalid" if form.stock.errors else "")) }}
+      {% for e in form.stock.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+    </div>
+  </div>
+  <div class="mb-3">
+    {{ form.image_url.label(class="form-label") }}
+    {{ form.image_url(class="form-control", placeholder="https://...") }}
+  </div>
+  <div class="mb-3">
+    {{ form.description.label(class="form-label") }}
+    {{ form.description(class="form-control", rows=4) }}
+  </div>
+  {{ form.submit(class="btn fm-btn-accent px-4") }}
+</form>
+{% endblock %}

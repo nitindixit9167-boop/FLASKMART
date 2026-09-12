@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Browse &mdash; FlaskMart{% endblock %}
+{% block content %}
+
+<div class="row">
+  <div class="col-lg-3 mb-4">
+    <h2 class="h6">Filter</h2>
+    <form method="get" class="mb-4">
+      {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+      <div class="mb-3">
+        <label class="form-label small text-muted">Type</label>
+        <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="" {{ 'selected' if not product_type }}>All</option>
+          <option value="book" {{ 'selected' if product_type == 'book' }}>Books</option>
+          <option value="general" {{ 'selected' if product_type == 'general' }}>General items</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small text-muted">Category</label>
+        <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All categories</option>
+          {% for c in categories %}
+            <option value="{{ c.id }}" {{ 'selected' if category_id == c.id }}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small text-muted">Sort by</label>
+        <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="newest" {{ 'selected' if sort == 'newest' }}>Newest</option>
+          <option value="price_low" {{ 'selected' if sort == 'price_low' }}>Price: low to high</option>
+          <option value="price_high" {{ 'selected' if sort == 'price_high' }}>Price: high to low</option>
+          <option value="name" {{ 'selected' if sort == 'name' }}>Name A&ndash;Z</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-9">
+    <div class="fm-section-title">
+      <h1 class="h4 mb-0">
+        {% if search %}Results for "{{ search }}"{% else %}All products{% endif %}
+      </h1>
+      <span class="text-muted small">{{ pagination.total }} item{{ 's' if pagination.total != 1 }}</span>
+    </div>
+
+    <div class="row g-4">
+      {% for product in products %}
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="{{ url_for('products.detail', slug=product.slug) }}" class="text-decoration-none text-reset">
+            <div class="fm-card">
+              <img class="fm-card-img w-100" src="{{ product.image_url or 'https://placehold.co/400x300?text=FlaskMart' }}" alt="{{ product.name }}">
+              <div class="fm-card-body">
+                <span class="fm-card-type">{{ 'Book' if product.product_type == 'book' else 'General' }}</span>
+                <h3 class="fm-card-title">{{ product.name }}</h3>
+                {% if product.product_type == 'book' and product.author %}
+                  <div class="text-muted small mb-1">by {{ product.author }}</div>
+                {% endif %}
+                <div class="fm-card-price">₹{{ '%.2f'|format(product.price) }}</div>
+                {% if product.stock == 0 %}
+                  <div class="fm-stock-out">Out of stock</div>
+                {% elif product.stock <= 3 %}
+                  <div class="fm-stock-low">Only {{ product.stock }} left</div>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        </div>
+      {% else %}
+        <p class="text-muted">No products match your filters.</p>
+      {% endfor %}
+    </div>
+
+    {% if pagination.pages > 1 %}
+      <nav class="mt-4">
+        <ul class="pagination">
+          {% for p in pagination.iter_pages() %}
+            {% if p %}
+              <li class="page-item {{ 'active' if p == pagination.page }}">
+                <a class="page-link" href="{{ url_for('products.list_products', page=p, q=search, category=category_id, type=product_type, sort=sort) }}">{{ p }}</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

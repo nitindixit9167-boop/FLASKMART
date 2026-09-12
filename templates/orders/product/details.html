@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} &mdash; FlaskMart{% endblock %}
+{% block content %}
+
+<div class="row g-5">
+  <div class="col-md-5">
+    <img class="fm-detail-img" src="{{ product.image_url or 'https://placehold.co/500x500?text=FlaskMart' }}" alt="{{ product.name }}">
+  </div>
+  <div class="col-md-7">
+    <span class="fm-eyebrow">{{ 'Book' if product.product_type == 'book' else 'General item' }}</span>
+    <h1 class="h3">{{ product.name }}</h1>
+    {% if product.product_type == 'book' and product.author %}
+      <p class="text-muted mb-2">by {{ product.author }}</p>
+    {% endif %}
+
+    {% if product.reviews %}
+      <p class="mb-2">
+        <span class="fm-rating-star">&#9733;</span> {{ product.average_rating }}
+        <span class="text-muted small">({{ product.reviews|length }} review{{ 's' if product.reviews|length != 1 }})</span>
+      </p>
+    {% else %}
+      <p class="text-muted small mb-2">No reviews yet</p>
+    {% endif %}
+
+    <h2 class="h4 fm-card-price">₹{{ '%.2f'|format(product.price) }}</h2>
+
+    {% if product.stock == 0 %}
+      <p class="fm-stock-out mt-2">Out of stock</p>
+    {% elif product.stock <= 3 %}
+      <p class="fm-stock-low mt-2">Only {{ product.stock }} left in stock</p>
+    {% endif %}
+
+    <p class="mt-3" style="max-width: 60ch;">{{ product.description }}</p>
+
+    {% if current_user.is_authenticated %}
+      <form method="post" action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" class="d-flex align-items-center gap-2 mt-3">
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width: 90px;" {{ 'disabled' if product.stock == 0 }}>
+        <button type="submit" class="btn fm-btn-accent px-4" {{ 'disabled' if product.stock == 0 }}>Add to cart</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('auth.login', next=request.path) }}" class="btn fm-btn-accent px-4 mt-3">Log in to purchase</a>
+    {% endif %}
+  </div>
+</div>
+
+<hr class="my-5">
+
+<div id="reviews">
+  <h2 class="h4 mb-4">Reviews</h2>
+
+  {% if current_user.is_authenticated %}
+    <form method="post" action="{{ url_for('reviews.add_review', product_id=product.id) }}" class="mb-4" style="max-width: 480px;">
+      {{ review_form.hidden_tag() }}
+      <div class="mb-2">
+        {{ review_form.rating.label(class="form-label small text-muted") }}
+        {{ review_form.rating(class="form-select") }}
+      </div>
+      <div class="mb-2">
+        {{ review_form.comment.label(class="form-label small text-muted") }}
+        {{ review_form.comment(class="form-control", rows=3) }}
+      </div>
+      {{ review_form.submit(class="btn btn-outline-secondary btn-sm") }}
+    </form>
+  {% else %}
+    <p class="text-muted"><a href="{{ url_for('auth.login') }}">Log in</a> to leave a review.</p>
+  {% endif %}
+
+  {% for review in reviews %}
+    <div class="fm-review">
+      <div class="d-flex justify-content-between">
+        <strong>{{ review.user.username }}</strong>
+        <span class="text-muted small">{{ review.created_at.strftime('%d %b %Y') }}</span>
+      </div>
+      <div class="fm-rating-star">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</div>
+      {% if review.comment %}<p class="mb-1">{{ review.comment }}</p>{% endif %}
+      {% if current_user.is_authenticated and (current_user.id == review.user_id or current_user.is_admin) %}
+        <form method="post" action="{{ url_for('reviews.delete_review', review_id=review.id) }}">
+          <button type="submit" class="btn btn-link btn-sm text-danger p-0">Delete</button>
+        </form>
+      {% endif %}
+    </div>
+  {% else %}
+    <p class="text-muted">Be the first to review this product.</p>
+  {% endfor %}
+</div>
+{% endblock %}
